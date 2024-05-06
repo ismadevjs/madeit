@@ -27,6 +27,9 @@ sed -i '' "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" src/.env
 
 echo "Database details updated successfully."
 
+# Update database name in docker-compose.yml
+sed -i '' "s/MYSQL_DATABASE: optizi/MYSQL_DATABASE: $DB_DATABASE/" docker-compose.yml
+
 # Run 'composer install' inside src/
 echo "Running 'composer install'..."
 cd src/ || exit
