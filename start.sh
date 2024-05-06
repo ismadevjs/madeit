@@ -6,12 +6,12 @@ DB_NAME=$1
 # Function to run Laravel migrations
 run_migrations() {
     echo "Running Laravel migrations..."
-    docker compose exec optimze php artisan migrate --force
-    docker compose exec optimze php artisan db:seed --class=ProviderSeeder
+    docker compose exec app php artisan migrate 
+    docker compose exec app php artisan db:seed --class=ProviderSeeder
 }
 
 # Run Laravel migrations
-docker compose build && docker compose up -d && docker compose exec db mysql -uroot -ptoor -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+docker compose build && docker compose up -d && docker compose exec mysql mysql -uroot -ptoor -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
 
 # Check if MySQL connection error occurred
 if [ $? -ne 0 ]; then
