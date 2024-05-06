@@ -24,12 +24,12 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: optimizeit
+      MYSQL_DATABASE: isdo
       MYSQL_ROOT_PASSWORD: toor
 
   # Application Service
   app:
-    container_name: blog
+    container_name: optimze
     build: 
       context: ./php
       dockerfile: Dockerfile

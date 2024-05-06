@@ -42,7 +42,7 @@ RUN apt-get update \
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
-# Copy entrypoint script into the container
+# Copy custom entrypoint script into the container
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Give execute permission to the entrypoint script
@@ -57,5 +57,5 @@ RUN chown -R appuser:appuser /var/www
 # Switch to the non-root user
 USER appuser
 
-# Set entrypoint
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# Execute entrypoint.sh script
+CMD ["/usr/local/bin/entrypoint.sh"]
