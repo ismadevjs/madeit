@@ -13,54 +13,54 @@ class FileController extends Controller
 
 
     public function files(Request $request)
-{
-    // Set default pagination values
-    $perPage = $request->input('perPage', 10);
-    $page = $request->input('page', 1);
+    {
+        // Set default pagination values
+        $perPage = $request->input('perPage', 10);
+        $page = $request->input('page', 1);
 
-    // Query parameters for filtering
-    $mediaType = $request->input('mediaType');
-    $uploadDate = $request->input('uploadDate');
+        // Query parameters for filtering
+        $mediaType = $request->input('mediaType');
+        $uploadDate = $request->input('uploadDate');
 
-    // Validate mediaType if provided
-    if ($mediaType && !in_array($mediaType, ['image', 'video', 'audio'])) {
-        return response()->json(['error' => 'Invalid mediaType'], 404);
+        // Validate mediaType if provided
+        if ($mediaType && !in_array($mediaType, ['image', 'video', 'audio'])) {
+            return response()->json(['error' => 'Invalid mediaType'], 404);
+        }
+
+        // Validate uploadDate if provided
+        if ($uploadDate && !File::whereDate('created_at', $uploadDate)->exists()) {
+            return response()->json(['error' => 'No files uploaded on the specified date'], 404);
+        }
+
+        // Start building the query
+        $query = File::query();
+
+        // Apply filters
+        if ($mediaType) {
+            $query->where('type', $mediaType);
+        }
+        if ($uploadDate) {
+            $query->whereDate('created_at', $uploadDate);
+        }
+
+        // Include provider name
+        $query->with('provider');
+
+        // Fetch uploaded files from the database, ordered by most recent first
+        $files = $query->orderBy('created_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
+
+        // Extract provider name from the provider object
+        $files->transform(function ($file) {
+            $file['provider_name'] = $file->provider ? $file->provider->name : null;
+            unset($file['provider']); // Remove the provider object if not needed
+            return $file;
+        });
+
+        return response()->json($files);
     }
 
-    // Validate uploadDate if provided
-    if ($uploadDate && !File::whereDate('created_at', $uploadDate)->exists()) {
-        return response()->json(['error' => 'No files uploaded on the specified date'], 404);
-    }
 
-    // Start building the query
-    $query = File::query();
 
-    // Apply filters
-    if ($mediaType) {
-        $query->where('type', $mediaType);
-    }
-    if ($uploadDate) {
-        $query->whereDate('created_at', $uploadDate);
-    }
-
-    // Include provider name
-    $query->with('provider');
-
-    // Fetch uploaded files from the database, ordered by most recent first
-    $files = $query->orderBy('created_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
-
-    // Extract provider name from the provider object
-    $files->transform(function ($file) {
-        $file['provider_name'] = $file->provider ? $file->provider->name : null;
-        unset($file['provider']); // Remove the provider object if not needed
-        return $file;
-    });
-
-    return response()->json($files);
-}
-
-    
-            
 
     private function uploadFile(Request $request, $type)
     {
