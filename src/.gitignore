@@ -17,3 +17,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+mysql/
+# Ignore MySQL data directory
+mysql/data/*
+
+# Ignore ca-key.pem file
+mysql/data/ca-key.pem

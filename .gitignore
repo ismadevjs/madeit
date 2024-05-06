@@ -1,2 +1,7 @@
-src/mysql_data
-src/mysql/data
+mysql/
+# Ignore MySQL data directory
+mysql/data/*
+
+# Ignore ca-key.pem file
+mysql/data/ca-key.pem
+
