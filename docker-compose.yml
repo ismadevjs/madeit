@@ -24,7 +24,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: isdo
+      MYSQL_DATABASE: azerty
       MYSQL_ROOT_PASSWORD: toor
 
   # Application Service

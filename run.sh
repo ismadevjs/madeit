@@ -1,5 +1,42 @@
 #!/bin/bash
 
+# Function to check if Docker is running as root
+check_docker_root() {
+    if [[ $(id -u) -eq 0 ]]; then
+        echo "Docker is running as root."
+        DOCKER_ROOT=true
+    else
+        echo "Docker is not running as root."
+        DOCKER_ROOT=false
+    fi
+}
+
+# Function to start the application
+start_application() {
+    if [ "$DOCKER_ROOT" = true ]; then
+        sudo ./start.sh "$DB_DATABASE"
+    else
+        ./start.sh "$DB_DATABASE"
+    fi
+}
+
+
+# Prompt user to confirm Docker's root status
+read -p "Is Docker running as root? (yes/no): " DOCKER_ROOT_CONFIRMATION
+
+case $DOCKER_ROOT_CONFIRMATION in
+    [yY]|[yY][eE][sS])
+        DOCKER_ROOT=true
+        ;;
+    [nN]|[nN][oO])
+        DOCKER_ROOT=false
+        ;;
+    *)
+        echo "Invalid input. Assuming Docker is not running as root."
+        DOCKER_ROOT=false
+        ;;
+esac
+
 # Copy .env.example to .env
 cp src/.env.example src/.env
 
@@ -27,9 +64,6 @@ sed -i -e "s/^DB_PASSWORD=.*/DB_PASSWORD=$DB_PASSWORD/" src/.env
 sed -i -e "s/MYSQL_DATABASE:.*/MYSQL_DATABASE: $DB_DATABASE/" docker-compose.yml
 echo "Database details updated successfully."
 
-# Update database name in docker-compose.yml
-sed -i -e "s/MYSQL_DATABASE: optizi/MYSQL_DATABASE: $DB_DATABASE/" docker-compose.yml
-
 # Run 'composer install' inside src/
 echo "Running 'composer install'..."
 cd src/ || exit
@@ -46,10 +80,10 @@ else
   cd ..
 fi
 
-# Check if previous steps were successful, then run start.sh
+# Check if previous steps were successful, then start the application
 if [ $? -eq 0 ]; then
   echo "Setup completed successfully. Starting application..."
-  sudo ./start.sh
+  start_application
 else
   echo "Setup failed. Please check the error messages above."
 fi
