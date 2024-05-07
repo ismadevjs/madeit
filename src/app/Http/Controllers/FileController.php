@@ -60,48 +60,6 @@ class FileController extends Controller
     }
 
 
-
-
-    private function uploadFile(Request $request, $type)
-    {
-        $file = $request->file('file');
-        $extension = $file->extension();
-        $size = $file->getSize();
-
-        if (!$file->isValid()) {
-            return response()->json(['error' => 'Invalid file'], 400);
-        }
-
-        $provider = Provider::findOrFail($request->provider_id);
-        $providerName = $provider->name;
-
-        if ($type === 'image') {
-            if (!$this->validateImage($file, 4 / 3, 2 * 1024 * 1024)) {
-                return response()->json(['error' => 'Image validation failed'], 400);
-            }
-        } else {
-            if (!$this->validateVideo($file, 60, 5 * 1024 * 1024)) {
-                return response()->json(['error' => 'Video validation failed'], 400);
-            }
-        }
-        // Save file to storage
-        $path = $file->store('files');
-
-        // Save file information to database
-        $fileModel = new File();
-        $fileModel->name = $request->name;
-        $fileModel->provider_id = $request->provider_id;
-        $fileModel->type = $type;
-        $fileModel->file = $path;
-        if($request->provider_id === "2") $fileModel->thumbnail = $this->captureVideoThumbnail($file);
-        $fileModel->save();
-
-        return response()->json($fileModel, 201);
-    }
-
-
-
-
     public function uploadImage(Request $request)
     {
         $request->validate([
@@ -230,6 +188,8 @@ class FileController extends Controller
     }
 
 
+    
+
 
     private function validateVideo($file, $maxDuration, $maxSize)
     {
@@ -256,8 +216,8 @@ class FileController extends Controller
         if ($file->getSize() > $maxSize) {
             return response()->json(['error' => 'Audio file size exceeds the maximum allowed size of ' . ($maxSize / 1024 / 1024) . ' MB.'], 400);
         }
-
-        return true; // Validation passed
+// Validation passed
+        return true; 
     }
 
 
@@ -305,4 +265,44 @@ class FileController extends Controller
         // Return the path of the captured thumbnail
         return $thumbnailPath;
     }
+
+
+    private function uploadFile(Request $request, $type)
+    {
+        $file = $request->file('file');
+        $extension = $file->extension();
+        $size = $file->getSize();
+
+        if (!$file->isValid()) {
+            return response()->json(['error' => 'Invalid file'], 400);
+        }
+
+        $provider = Provider::findOrFail($request->provider_id);
+        $providerName = $provider->name;
+
+        if ($type === 'image') {
+            if (!$this->validateImage($file, 4 / 3, 2 * 1024 * 1024)) {
+                return response()->json(['error' => 'Image validation failed'], 400);
+            }
+        } else {
+            if (!$this->validateVideo($file, 60, 5 * 1024 * 1024)) {
+                return response()->json(['error' => 'Video validation failed'], 400);
+            }
+        }
+        // Save file to storage
+        $path = $file->store('files');
+
+        // Save file information to database
+        $fileModel = new File();
+        $fileModel->name = $request->name;
+        $fileModel->provider_id = $request->provider_id;
+        $fileModel->type = $type;
+        $fileModel->file = $path;
+        if($request->provider_id === "2") $fileModel->thumbnail = $this->captureVideoThumbnail($file);
+        $fileModel->save();
+
+        return response()->json($fileModel, 201);
+    }
+
+    
 }
