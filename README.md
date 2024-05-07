@@ -1,6 +1,6 @@
 # madeit fixed
 
-Brief description of your project.
+This is the solution of Opti
 
 ## Prerequisites
 
@@ -18,17 +18,27 @@ Brief description of your project.
   - Method: `providers`
 
 - **GET /files**
-  - Description: Retrieve a list of files.
+  - Description: Retrieve a list of files with pagination.
+  - Controller: `FileController`
+  - Method: `files`
+
+  **GET /files?mediaType=image&page=1** it can be image,video,audio with pagination.
+  - Description: Retrieve a list of files with filtring mediaType 
+  - Controller: `FileController`
+  - Method: `files`
+
+  **GET /files?uploadDate=YYYY-MM-DD&page=1** it can be image,video,audio with pagination.
+  - Description: Retrieve a list of files with filtring mediaType 
   - Controller: `FileController`
   - Method: `files`
 
 - **POST /upload/image**
-  - Description: Upload an image file.
+  - Description: Upload an image file. validation included
   - Controller: `FileController`
   - Method: `uploadImage`
 
 - **POST /upload/video**
-  - Description: Upload a video file.
+  - Description: Upload a video file. validation included
   - Controller: `FileController`
   - Method: `uploadVideo`
 
@@ -44,3 +54,11 @@ Brief description of your project.
 ## Installation
 ```bash
 bash run.sh
+
+
+## To run Unit Tests using PEST in LARAVEL Just Run the script 'run_tests.sh'
+```bash
+bash run_tests.sh
+
+## Routes are inside src/routes/api.php
+
