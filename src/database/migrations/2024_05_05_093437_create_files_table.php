@@ -17,7 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('provider_id');
             $table->foreign('provider_id')->references('id')->on('providers')->onDelete('cascade');
             $table->string('file');
-            $table->enum('type', ['image', 'video', 'audio']); // Type of file: image or video
+            $table->string('thumbnail')->nullable();
+            $table->enum('type', ['image', 'video', 'audio']);
             $table->timestamps();
         });
     }

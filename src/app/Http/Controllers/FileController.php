@@ -84,7 +84,6 @@ class FileController extends Controller
                 return response()->json(['error' => 'Video validation failed'], 400);
             }
         }
-
         // Save file to storage
         $path = $file->store('files');
 
@@ -94,44 +93,13 @@ class FileController extends Controller
         $fileModel->provider_id = $request->provider_id;
         $fileModel->type = $type;
         $fileModel->file = $path;
+        if($request->provider_id === "2") $fileModel->thumbnail = $this->captureVideoThumbnail($file);
         $fileModel->save();
 
         return response()->json($fileModel, 201);
     }
 
-    private function validateImage($file, $aspectRatio, $maxSize)
-    {
-        // Get image dimensions
-        $imageInfo = getimagesize($file->getPathname());
-        if (!$imageInfo) {
-            return 'Invalid image file';
-        }
 
-        // Calculate aspect ratio
-        $ratio = $imageInfo[0] / $imageInfo[1];
-
-        // Check aspect ratio
-        if ($ratio !== $aspectRatio) {
-            return 'Image aspect ratio must be ' . $aspectRatio;
-        }
-
-        // Check file size
-        if ($file->getSize() > $maxSize) {
-            return 'Image size must be less than ' . ($maxSize / 1024) . ' KB';
-        }
-
-        // Validation passed
-        return true;
-    }
-
-    private function validateVideo($file, $maxDuration, $maxSize)
-    {
-        $path = $file->store('temp');
-        $videoDuration = FFMpeg::fromDisk('local')->open($path)->getDurationInSeconds();
-        unlink(storage_path('app/' . $path)); // Clean up temporary file
-
-        return $videoDuration <= $maxDuration && $file->getSize() <= $maxSize;
-    }
 
 
     public function uploadImage(Request $request)
@@ -186,6 +154,33 @@ class FileController extends Controller
         return $this->uploadFile($request, 'image');
     }
 
+
+    private function validateImage($file, $aspectRatio, $maxSize)
+    {
+        // Get image dimensions
+        $imageInfo = getimagesize($file->getPathname());
+        if (!$imageInfo) {
+            return 'Invalid image file';
+        }
+
+        // Calculate aspect ratio
+        $ratio = $imageInfo[0] / $imageInfo[1];
+
+        // Check aspect ratio
+        if ($ratio !== $aspectRatio) {
+            return 'Image aspect ratio must be ' . $aspectRatio;
+        }
+
+        // Check file size
+        if ($file->getSize() > $maxSize) {
+            return 'Image size must be less than ' . ($maxSize / 1024) . ' KB';
+        }
+
+        // Validation passed
+        return true;
+    }
+
+
     public function uploadVideo(Request $request)
     {
         $request->validate([
@@ -221,6 +216,8 @@ class FileController extends Controller
                 if (!$this->validateVideo($file, 300, 50 * 1024 * 1024)) {
                     return response()->json(['error' => 'Video validation failed'], 400);
                 }
+                // generate the thumbnail file
+                $this->captureVideoThumbnail($file);
             } else {
                 return response()->json(['error' => 'Invalid file type for Snapchat provider'], 400);
             }
@@ -230,6 +227,17 @@ class FileController extends Controller
 
         // If validation passes, proceed with file upload
         return $this->uploadFile($request, $request->type);
+    }
+
+
+
+    private function validateVideo($file, $maxDuration, $maxSize)
+    {
+        $path = $file->store('temp');
+        $videoDuration = FFMpeg::fromDisk('local')->open($path)->getDurationInSeconds();
+        unlink(storage_path('app/' . $path)); // Clean up temporary file
+
+        return $videoDuration <= $maxDuration && $file->getSize() <= $maxSize;
     }
 
 
@@ -278,14 +286,23 @@ class FileController extends Controller
         return true;
     }
 
-
-
-    private function validateVideoDuration($file, $maxDuration)
+    private function captureVideoThumbnail($videoPath)
     {
-        $path = $file->store('temp');
-        $videoDuration = FFMpeg::fromDisk('local')->open($path)->getDurationInSeconds();
-        unlink(storage_path('app/' . $path)); // Clean up temporary file
+        // Get the duration of the video
+        $videoDuration = FFMpeg::fromDisk('local')->open($videoPath)->getDurationInSeconds();
 
-        return $videoDuration <= $maxDuration;
+        // Calculate the time to capture the thumbnail from the middle
+        $middleTime = $videoDuration / 2;
+
+        // Generate a random time within a range around the middle time
+        $randomTime = mt_rand(max(0, $middleTime - 5), min($videoDuration, $middleTime + 5));
+
+        // Capture the thumbnail at the random time
+        $thumbnailPath = 'thumbnails/' . uniqid() . '.jpg'; // Define the storage path for the thumbnail
+        FFMpeg::fromDisk('local')->open($videoPath)->getFrameFromSeconds($randomTime)->export()
+            ->toDisk('local')->save($thumbnailPath);
+
+        // Return the path of the captured thumbnail
+        return $thumbnailPath;
     }
 }
