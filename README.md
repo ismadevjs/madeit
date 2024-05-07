@@ -54,11 +54,11 @@ This is the solution of Opti
 ## Installation
 ```bash
 bash run.sh
-
+```
 
 ## To run Unit Tests using PEST in LARAVEL Just Run the script 'run_tests.sh'
 ```bash
 bash run_tests.sh
-
+```
 ## Routes are inside src/routes/api.php
 
