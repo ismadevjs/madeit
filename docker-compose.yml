@@ -24,7 +24,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: wxc
+      MYSQL_DATABASE: name_of_databse
       MYSQL_ROOT_PASSWORD: toor
 
   # Application Service

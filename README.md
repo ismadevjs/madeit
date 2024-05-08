@@ -56,6 +56,28 @@ This is the solution of Opti
 bash start.sh
 ```
 
+
+## default configuration - make sure the databse hotsname to be : DB
+
+```bash
+Is Docker running as root? (yes/no): yes
+Enter the database host (default: 127.0.0.1): db
+Enter the database port (default: 3306): 3306
+Enter the database name: name_of_databse
+Enter the database username: root
+Enter the database password: toor
+```
+
+## it will ask you which docker compose syntax your system using, choose the right one.
+```bash
+Do you have docker-compose or docker compose installed? Choose one:
+1) docker-compose
+2) docker compose
+```
+
+## I tested it using (Ubuntu : docker compose) - (kali linux : docker-compose) - (MacOs Ventura : docker compose) 
+
+
 ## To run Unit Tests using PEST in LARAVEL Just Run the script 'run_tests.sh'
 ```bash
 bash run_tests.sh
