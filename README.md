@@ -46,7 +46,7 @@ This is the solution of Opti
 ## Getting Started
 
 1. Clone the repository.
-2. Run the `run.sh` script.
+2. Run the `start.sh` script.
 3. Access the application at [http://localhost:8080](http://localhost:8080).
 
 
