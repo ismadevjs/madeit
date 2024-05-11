@@ -28,11 +28,11 @@ sleep 1
 $DOCKER_COMMAND up -d
 sleep 1
 
-$DOCKER_COMMAND exec db mysql -uroot -ptoor -e "SHOW DATABASES;"
+$DOCKER_COMMAND exec db mysql -uroot -ptoor -e "SHOW DATABASES;" --protocol=tcp
 sleep 2
 
-$DOCKER_COMMAND exec db mysql -uroot -ptoor -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
-sleep 3
+$DOCKER_COMMAND exec db mysql -uroot -ptoor -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;" --protocol=tcp
+sleep 4
 
 $DOCKER_COMMAND exec app php artisan migrate
 sleep 5
