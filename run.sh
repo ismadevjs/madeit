@@ -40,6 +40,9 @@ sleep 5
 $DOCKER_COMMAND exec app php artisan db:seed --class=ProviderSeeder
 sleep 3
 
+$DOCKER_COMMAND exec app php artisan storage:link 
+sleep 3
+
 # Check if MySQL connection error occurred
 if [ $? -ne 0 ]; then
     echo "Error: Can't connect to local MySQL server."

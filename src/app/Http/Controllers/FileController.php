@@ -85,7 +85,7 @@ class FileController extends Controller
             }
         }
         // Save file to storage
-        $path = $file->store('files');
+        $path = $file->store('public/files');
 
         // Save file information to database
         $fileModel = new File();
@@ -233,7 +233,7 @@ class FileController extends Controller
 
     private function validateVideo($file, $maxDuration, $maxSize)
     {
-        $path = $file->store('temp');
+        $path = $file->store('public/temp');
         $videoDuration = FFMpeg::fromDisk('local')->open($path)->getDurationInSeconds();
         unlink(storage_path('app/' . $path)); // Clean up temporary file
 
@@ -243,7 +243,7 @@ class FileController extends Controller
 
     private function validateAudio($file, $maxDuration, $maxSize)
     {
-        $path = $file->store('temp');
+        $path = $file->store('public/temp');
         $audioDuration = FFMpeg::fromDisk('local')->open($path)->getDurationInSeconds();
         unlink(storage_path('app/' . $path)); // Clean up temporary file
 
@@ -298,7 +298,7 @@ class FileController extends Controller
         $randomTime = mt_rand(max(0, $middleTime - 5), min($videoDuration, $middleTime + 5));
 
         // Capture the thumbnail at the random time
-        $thumbnailPath = 'thumbnails/' . uniqid() . '.jpg'; // Define the storage path for the thumbnail
+        $thumbnailPath = 'public/thumbnails/' . uniqid() . '.jpg'; // Define the storage path for the thumbnail
         FFMpeg::fromDisk('local')->open($videoPath)->getFrameFromSeconds($randomTime)->export()
             ->toDisk('local')->save($thumbnailPath);
 

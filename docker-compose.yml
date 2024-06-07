@@ -24,7 +24,7 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: roocx
+      MYSQL_DATABASE: opti
       MYSQL_ROOT_PASSWORD: toor
 
   # Application Service

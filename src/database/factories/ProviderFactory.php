@@ -17,7 +17,7 @@ class ProviderFactory extends Factory
         return [
             'name' => $this->faker->randomElement(['Google', 'Snapchat']),
             'description' => function (array $attributes) {
-                return $attributes['name'] === 'Google' ? 
+                return $attributes['name'] === 'Google' ?
                     'Must be in aspect ratio 4:3, < 2 MB size for .jpg, < 1 minute long for .mp4, < 30 seconds long for .mp3' :
                     'Must be in aspect ratio 16:9, < 5 MB in size for .jpg and .gif, < 50 MB in size for .mp4 and .mov, < 5 minutes long for .mp4 and .mov';
             },
