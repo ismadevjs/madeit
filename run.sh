@@ -40,6 +40,9 @@ sleep 5
 $DOCKER_COMMAND exec app php artisan db:seed --class=ProviderSeeder
 sleep 3
 
+$DOCKER_COMMAND exec app php artisan storage:unlink
+sleep 3
+
 $DOCKER_COMMAND exec app php artisan storage:link 
 sleep 3
 
